@@ -3,13 +3,18 @@ import {
 	putCityPopulation,
 } from '../controllers/populationController.js';
 
+// Schema
 const Item = {
 	type: 'object',
 	properties: {
+		message: { type: 'string' },
+		city: { type: 'string' },
+		state: { type: 'string' },
 		population: { type: 'integer' },
 	},
 };
 
+// Options
 const getCityPopulationOpts = {
 	schema: {
 		response: {
@@ -27,6 +32,7 @@ const putCityPopulationOpts = {
 	handler: putCityPopulation,
 };
 
+//	Routes
 async function populationRoutes(fastify, options) {
 	fastify.get('/state/:state/city/:city', getCityPopulationOpts);
 	fastify.put('/state/:state/city/:city', putCityPopulationOpts);
