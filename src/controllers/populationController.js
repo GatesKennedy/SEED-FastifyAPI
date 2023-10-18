@@ -10,7 +10,7 @@ if (cityData.records && cityData.records.length < 1) {
 
 // Route Actions
 // GET cityData
-export const getCityPopulation = async (req, reply) => {
+export const getCityPopulation = (req, reply) => {
 	try {
 		const state = String(req.params.state).toLowerCase();
 		const city = String(req.params.city).toLowerCase();
@@ -26,6 +26,7 @@ export const getCityPopulation = async (req, reply) => {
 			population: population,
 		});
 	} catch (err) {
+		console.error('ERR: @ getCityPopulation Route - ', err.message);
 		return reply.status(400).send({ message: err.message });
 	}
 };
@@ -45,6 +46,7 @@ export const putCityPopulation = async (req, reply) => {
 			population: population,
 		});
 	} catch (err) {
+		console.error('ERR: @ putCityPopulation Route - ', err.message);
 		return reply.status(400).send({ message: err.message });
 	}
 };
