@@ -17,7 +17,7 @@ export const getCityPopulation = async (req, reply) => {
 
 		const population = cityData.findCityRecord(city, state);
 		if (Number.isNaN(population) || population === null) {
-			throw new Error(`ERROR: '${city}', '${state}' Not Found!`);
+			throw new Error(`Error: '${city}', '${state}' not found.`);
 		}
 
 		return reply.send({

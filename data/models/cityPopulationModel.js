@@ -2,7 +2,6 @@ import fs from 'fs';
 export class CityPopulation {
 	constructor(filePathUri) {
 		this.filePath = filePathUri;
-		this.encoding = 'utf-8';
 		this.records = this.initData();
 	}
 
