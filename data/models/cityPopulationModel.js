@@ -39,7 +39,7 @@ export class CityPopulation {
 			this.loadData();
 		} catch (error) {
 			console.error(
-				`ERR @ writeData() - Failed to Write Data to ${this.filePath}`,
+				'ERR @ writeData() - Failed to Write Data to ' + this.filePath,
 			);
 			// pass up Error
 			throw error;
@@ -51,13 +51,11 @@ export class CityPopulation {
 		// 'for of' loop faster than Array Methods
 		for (const row of this.records) {
 			// skim records with partial 2 char read of each
-			if (
-				row.toLowerCase().slice(0, 2) === city.toLowerCase().slice(0, 2)
-			) {
+			if (row.toLowerCase().slice(0, 2) === city.slice(0, 2)) {
 				// compare deeper if promising 'skim'
 				const rowArray = row.split(',');
-				if (rowArray[0].toLowerCase() === city.toLowerCase()) {
-					if (rowArray[1].toLowerCase() === state.toLowerCase()) {
+				if (rowArray[0].toLowerCase() === city) {
+					if (rowArray[1].toLowerCase() === state) {
 						return rowArray[2];
 					}
 				}
@@ -73,17 +71,18 @@ export class CityPopulation {
 			// 'for of' loop faster than Array Methods
 			for (const row of this.records) {
 				// skim records with partial 2 char read of each
-				if (
-					row.toLowerCase().slice(0, 2) ===
-					city.toLowerCase().slice(0, 2)
-				) {
+				if (row.toLowerCase().slice(0, 2) === city.slice(0, 2)) {
 					// compare deeper if promising 'skim'
 					const rowArray = row.split(',');
-					if (rowArray[0].toLowerCase() === city.toLowerCase()) {
-						if (rowArray[1].toLowerCase() === state.toLowerCase()) {
+					if (rowArray[0].toLowerCase() === city) {
+						if (rowArray[1].toLowerCase() === state) {
 							recordFound = true;
 							updatedRecords.push(
-								`${rowArray[0]},${rowArray[1]},${population}`,
+								rowArray[0] +
+									',' +
+									rowArray[1] +
+									',' +
+									population,
 							);
 							continue;
 						}
@@ -94,10 +93,11 @@ export class CityPopulation {
 			// write file update
 			if (recordFound) {
 				this.writeData(updatedRecords.join('\n'));
+				return 200;
 			} else {
-				throw new Error(
-					'No Record Found. Creating records is not allowed.',
-				);
+				updatedRecords.push(city + ',' + state + ',' + population);
+				this.writeData(updatedRecords.join('\n'));
+				return 201;
 			}
 		} catch (error) {
 			console.error('ERR: @ putCityRecord() ', error.message);

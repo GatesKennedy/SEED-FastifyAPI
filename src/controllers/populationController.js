@@ -16,8 +16,10 @@ export const getCityPopulation = (req, reply) => {
 		const city = String(req.params.city).toLowerCase();
 
 		const population = cityData.findCityRecord(city, state);
-		if (Number.isNaN(population) || population === null) {
-			throw new Error(`Error: '${city}', '${state}' not found.`);
+		if (population === null) {
+			throw new Error(
+				"Error: '" + city + "', '" + state + "' not found.",
+			);
 		}
 
 		return reply.send({
@@ -36,11 +38,19 @@ export const putCityPopulation = async (req, reply) => {
 	try {
 		const state = String(req.params.state).toLowerCase();
 		const city = String(req.params.city).toLowerCase();
-		const population = req.body.population;
+		const population = req.body.toString().trim();
 
-		await cityData.putCityRecord(city, state, population);
+		if (isNaN(population)) {
+			throw new Error('Error: Population value is not a number.');
+		}
 
-		return reply.send({
+		const statusType = await cityData.putCityRecord(
+			city,
+			state,
+			population,
+		);
+
+		return reply.status(statusType).send({
 			state: state,
 			city: city,
 			population: population,
