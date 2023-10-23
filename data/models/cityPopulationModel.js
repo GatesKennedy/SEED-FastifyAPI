@@ -45,9 +45,9 @@ export class CityPopulation {
 		try {
 			// Block all writes for 2000ms
 			this.lastWrite = Date.now();
-			// write to temp
+			// write to temp (async OS proc)
 			await writeFile(this.tempFilePath, this.records.join('\n'));
-			// copy temp to working file
+			// copy temp to working file (async OS proc)
 			await copyFile(this.tempFilePath, this.workFilePath);
 			this.lastWrite = Date.now();
 			this.writeQueue = 0;
