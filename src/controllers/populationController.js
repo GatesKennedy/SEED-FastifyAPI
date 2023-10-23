@@ -1,7 +1,8 @@
 import { CityPopulation } from '../../data/models/cityPopulationModel.js';
 
-const dataPath = './data/city_populations.csv';
-const cityData = new CityPopulation(dataPath);
+const dataPath = './data/records_working.csv';
+const holdingPath = './data/records_temp.csv';
+const cityData = new CityPopulation(dataPath, holdingPath);
 
 if (cityData.records && cityData.records.length < 1) {
 	console.log('dataLoaded @ ', Date.now());
@@ -21,7 +22,7 @@ export const getCityPopulation = (req, reply) => {
 				"Error: '" + city + "', '" + state + "' not found.",
 			);
 		}
-
+		// console.log('GOOD: ', population);
 		return reply.send({
 			city: city,
 			state: state,
@@ -57,6 +58,7 @@ export const putCityPopulation = async (req, reply) => {
 		});
 	} catch (err) {
 		console.error('ERR: @ putCityPopulation Route - ', err.message);
+
 		return reply.status(400).send({ message: err.message });
 	}
 };

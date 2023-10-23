@@ -6,6 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node src/server.js",
+		"reset": "node lib/resetDataScript.js",
 		"dev": "nodemon src/server.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},

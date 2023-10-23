@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import populationRoutes from './routes/populationRoutes.js';
 
 const fastify = Fastify({
-	logger: true,
+	// logger: true,
 });
 
 // Register Routes
