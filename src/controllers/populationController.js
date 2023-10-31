@@ -11,18 +11,25 @@ if (cityData.records && cityData.records.length < 1) {
 
 // Route Actions
 // GET cityData
-export const getCityPopulation = (req, reply) => {
+export const getCityPopulation = async (req, reply) => {
 	try {
 		const state = String(req.params.state).toLowerCase();
 		const city = String(req.params.city).toLowerCase();
 
-		const population = cityData.findCityRecord(city, state);
+		let population = cityData.findCacheRecord(city, state);
+
+		if (!population) {
+			population = await cityData.findSourceRecord(city, state);
+		}
+
 		if (population === null) {
 			throw new Error(
 				"Error: '" + city + "', '" + state + "' not found.",
 			);
 		}
+
 		// console.log('GOOD: ', population);
+		cityData.updateCache(city, state, population);
 		return reply.send({
 			city: city,
 			state: state,

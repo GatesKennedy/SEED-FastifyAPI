@@ -1,11 +1,14 @@
 import fs from 'fs';
 import { copyFile, writeFile } from 'fs/promises';
 import { readFile, appendFile } from 'node:fs/promises';
+import { Worker } from 'worker_threads';
 export class CityPopulation {
 	constructor(workingFilePathUri, tempFilePathUri) {
 		this.workFilePath = workingFilePathUri;
 		this.tempFilePath = tempFilePathUri;
 		this.records = this.initData() ?? [];
+		this.cache = [];
+		this.cacheMax = 64;
 		this.writeQueue = 0;
 		this.lastWrite = Date.now();
 	}
@@ -59,23 +62,48 @@ export class CityPopulation {
 			throw error;
 		}
 	}
+	updateCache(city, state, population) {
+		const record = city + ',' + state + ',' + population;
+		if (this.cache.includes(record)) {
+			return;
+		}
 
-	// Records Actions
-	findCityRecord(city, state) {
-		// 'for of' loop faster than Array Methods
-		for (const row of this.records) {
-			// skim records with partial 2 char read of each
-			if (row.toLowerCase().slice(0, 2) === city.slice(0, 2)) {
-				// compare deeper if promising 'skim'
-				const rowArray = row.split(',');
-				if (rowArray[0].toLowerCase() === city) {
-					if (rowArray[1].toLowerCase() === state) {
-						return rowArray[2];
-					}
-				}
+		while (this.cache.length >= this.cacheMax) {
+			this.cache.pop();
+		}
+
+		this.cache.push(record);
+	}
+
+	findCacheRecord(city, state) {
+		for (const record of this.cache) {
+			if (record.includes(city + ',' + state + ',')) {
+				return record.split(',').at(-1);
 			}
 		}
 		return null;
+	}
+
+	// Records Actions
+	async findSourceRecord(city, state) {
+		return new Promise((resolve, reject) => {
+			const records = this.records;
+			const worker = new Worker('./data/models/wFinder.js', {
+				workerData: {
+					city,
+					state,
+					records,
+				},
+			});
+
+			worker.once('message', (data) => {
+				resolve(data);
+			});
+
+			worker.once('error', (err) => {
+				reject(err);
+			});
+		});
 	}
 
 	async putCityRecord(city, state, population) {
