@@ -52,7 +52,9 @@ export const putCityPopulation = async (req, reply) => {
 		}
 
 		let statusType = cityData.updateCache(city, state, population);
+		console.log('statusType: ', statusType);
 		if (statusType === 200) {
+			console.log('Put Cache Record');
 			return reply.status(statusType).send({
 				state: state,
 				city: city,
