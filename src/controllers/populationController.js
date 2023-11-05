@@ -4,10 +4,10 @@ const dataPath = './data/records_working.csv';
 const holdingPath = './data/records_temp.csv';
 const cityData = new CityPopulation(dataPath, holdingPath);
 
-if (cityData.records && cityData.records.length < 1) {
-	console.log('dataLoaded @ ', Date.now());
-	cityData.loadData();
-}
+// if (cityData.records && cityData.records.length < 1) {
+// 	console.log('dataLoaded @ ', Date.now());
+// 	cityData.loadData();
+// }
 
 // Route Actions
 // GET cityData
@@ -20,6 +20,7 @@ export const getCityPopulation = async (req, reply) => {
 
 		if (!population) {
 			population = await cityData.findSourceRecord(city, state);
+			cityData.updateCache(city, state, population);
 		}
 
 		if (population === null) {
@@ -29,7 +30,6 @@ export const getCityPopulation = async (req, reply) => {
 		}
 
 		// console.log('GOOD: ', population);
-		cityData.updateCache(city, state, population);
 		return reply.send({
 			city: city,
 			state: state,
