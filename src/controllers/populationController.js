@@ -16,11 +16,11 @@ export const getCityPopulation = async (req, reply) => {
 		const state = String(req.params.state).toLowerCase();
 		const city = String(req.params.city).toLowerCase();
 
-		let population = cityData.findCacheRecord(city, state);
+		let population = cityData.findCacheRecord(city, state)[0];
 
 		if (!population) {
 			population = await cityData.findSourceRecord(city, state);
-			cityData.updateCache(city, state, population);
+			cityData.appendToCache(city, state, population);
 		}
 
 		if (population === null) {
@@ -29,7 +29,6 @@ export const getCityPopulation = async (req, reply) => {
 			);
 		}
 
-		// console.log('GOOD: ', population);
 		return reply.send({
 			city: city,
 			state: state,
@@ -52,11 +51,16 @@ export const putCityPopulation = async (req, reply) => {
 			throw new Error('Error: Population value is not a number.');
 		}
 
-		const statusType = await cityData.putCityRecord(
-			city,
-			state,
-			population,
-		);
+		let statusType = cityData.updateCache(city, state, population);
+		if (statusType === 200) {
+			return reply.status(statusType).send({
+				state: state,
+				city: city,
+				population: population,
+			});
+		}
+
+		statusType = await cityData.putCityRecord(city, state, population);
 
 		return reply.status(statusType).send({
 			state: state,

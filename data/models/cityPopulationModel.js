@@ -46,27 +46,39 @@ export class CityPopulation {
 	async indexRecords() {
 		// await this.threadPool()
 	}
-	updateCache(city, state, population) {
-		const record = city + ',' + state + ',' + population;
-		if (this.cache.includes(record)) {
-			return;
-		}
 
+	// returns [population, cacheIndex]
+	findCacheRecord(city, state) {
+		for (let i = 0; i < this.cache.length; i++) {
+			if (this.cache[i].includes(city + ',' + state + ',')) {
+				return [this.cache[i].split(',').at(-1), i];
+			}
+		}
+		return [null, null];
+	}
+	appendToCache(city, state, population) {
 		while (this.cache.length >= this.cacheMax) {
 			this.cache.pop();
 		}
 
-		this.cache.push(record);
+		this.cache.push(city + ',' + state + ',' + population);
 	}
-	findCacheRecord(city, state) {
-		for (const record of this.cache) {
-			if (record.includes(city + ',' + state + ',')) {
-				return record.split(',').at(-1);
-			}
+	updateCache(city, state, population) {
+		const cacheRecord = this.findCacheRecord(city, state);
+		if (cacheRecord[1] === null) {
+			return null;
+		}
+
+		const oldRecord = this.cache.splice(
+			cacheRecord[1],
+			1,
+			city + ',' + state + ',' + population,
+		);
+		if (oldRecord && cacheRecord[1]) {
+			return 200;
 		}
 		return null;
 	}
-
 	// Records Actions
 	async findSourceRecord(city, state, indexStart, indexEnd) {
 		const foundIndex = await this.threadPool.run(
