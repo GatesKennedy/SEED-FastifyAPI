@@ -49,7 +49,6 @@ export class CityPopulation {
 
 	// returns [population, cacheIndex]
 	findCacheRecord(city, state) {
-		console.log('findCacheRecord()...');
 		for (let i = 0; i < this.cache.length; i++) {
 			if (this.cache[i].includes(city + ',' + state + ',')) {
 				return [this.cache[i].split(',').at(-1), i];
@@ -58,7 +57,6 @@ export class CityPopulation {
 		return [null, null];
 	}
 	appendToCache(city, state, population) {
-		console.log('appendToCache()...');
 		while (this.cache.length >= this.cacheMax) {
 			this.cache.pop();
 		}
@@ -66,9 +64,7 @@ export class CityPopulation {
 		this.cache.push(city + ',' + state + ',' + population);
 	}
 	updateCache(city, state, population) {
-		console.log('updateCache()...');
 		const cacheRecord = this.findCacheRecord(city, state);
-		console.log('cacheRecord: ', cacheRecord);
 		if (cacheRecord[0] === null) {
 			return null;
 		}
@@ -79,10 +75,8 @@ export class CityPopulation {
 			city + ',' + state + ',' + population,
 		);
 		if (oldRecord && cacheRecord[0]) {
-			console.log('updated CACHE');
 			return 200;
 		}
-		console.log('update FAIL');
 		return null;
 	}
 	// Records Actions
@@ -101,7 +95,6 @@ export class CityPopulation {
 	}
 
 	async putCityRecord(city, state, population) {
-		console.log('Put Source Record');
 		let recordFound = false;
 		let foundIndex = null;
 		// const searchRange =
@@ -124,7 +117,6 @@ export class CityPopulation {
 					1,
 					city + ',' + state + ',' + population,
 				);
-				// console.log(foundIndex + ' ' + updatedRecord);
 				// check if write is necessary
 				if (Date.now() - this.lastWrite < 2000 || this.writeQueue < 1) {
 					await this.updateSourceRecords();
